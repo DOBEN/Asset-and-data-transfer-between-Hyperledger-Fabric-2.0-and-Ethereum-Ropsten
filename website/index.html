@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" type="text/javascript"></script>
+
+	<title id="title">Inter-Blockchain Transfer</title>
+	<title>Proof of Concept: Hyperledger Fabric 2.0 and Ethereum </title>
+
+</head>
+
+<body>
+	<h3>Data and Asset Transfer between Blockchains</h3>
+	<h3>Proof of Concept: Hyperledger Fabric 2.0 and Ethereum (Ropsten Testnet) </h3>
+
+
+	<input id="key1" type="text" value="Type in the key of asset!">
+	<input id="value" type="text" value="Type in a string!"><br></br>
+	<input id="invoke_hyperledger" type="submit" value="Click to log asset to Hyperledger!"
+		onclick="invoke_hyperledger()">
+	<input id="invoke_ethereum" type="submit" value="Click to log asset to Ethereum!"
+		onclick="invoke_ethereum()"><br></br>
+	<p id="field0"></p>
+	<a id="field1"></a><br></br><br></br>
+
+
+	<input name="key" id="key2" type="text" value="Type in the key of asset!"><br></br>
+	<input id="query_hyperledger" type="submit" value="Click to query asset from Hyperledger!"
+		onclick="query_hyperledger()">
+	<input id="query_ethereum" type="submit" value="Click to query asset from Ethereum!" onclick="query_ethereum()">
+
+	<br></br><br></br>
+	<p id="field3"></p>
+	</p><br></br>
+
+	<input id="key3" type="text" value="Type in the key of asset!"><br></br>
+	<input id="copy_hyperledger_to_ethereum" type="submit" value="Click to copy asset from Hyperledger to Ethereum!"
+		onclick="copy_1()">
+	<input id="copy_ethereum_to_hyperledger" type="submit" value="Click to copy asset from Ethereum to Hyperledger!"
+		onclick="copy_2()">
+	<p id="field5"></p>
+	<a id="field6"></a><br></br>
+
+
+
+
+	<p>Additional info:</p>
+	<p>This is the link of the contract on the ropsten test net:
+	<p>
+		<a
+			href="https://ropsten.etherscan.io/address/0xe3Bb1A8129d5Be6684c75ea3Fe884303e97638f5">https://ropsten.etherscan.io/address/0xe3Bb1A8129d5Be6684c75ea3Fe884303e97638f5</a>
+		<script>
+			var web3 = new Web3(Web3.givenProvider || "ws://ropsten.infura.io/v3/6d785757971742a5a841898f704604fc");
+			//Please use your own infura endpoint of the ropsten testnet here.
+
+
+			var abi = [
+				{
+					"inputs": [
+						{
+							"internalType": "string",
+							"name": "_key",
+							"type": "string"
+						},
+						{
+							"internalType": "string",
+							"name": "_value",
+							"type": "string"
+						}
+					],
+					"name": "store",
+					"outputs": [],
+					"stateMutability": "nonpayable",
+					"type": "function"
+				},
+				{
+					"inputs": [
+						{
+							"internalType": "string",
+							"name": "_key",
+							"type": "string"
+						}
+					],
+					"name": "retreive",
+					"outputs": [
+						{
+							"internalType": "string",
+							"name": "",
+							"type": "string"
+						}
+					],
+					"stateMutability": "view",
+					"type": "function"
+				}
+			]
+
+			ethereum.enable()
+
+			var mycontract = new web3.eth.Contract(abi, '0xe3Bb1A8129d5Be6684c75ea3Fe884303e97638f5');
+
+
+			function query_hyperledger() {
+
+				$("#field3").empty()
+				$.ajax({
+					type: "GET",
+					url: "/query_hyperledger",
+					contentType: "application/json",
+					dataType: "json",
+					data: {
+						key: $("#key2").val(),
+					},
+					success: function (response) {
+						document.getElementById('field3').innerHTML = `This is stored on the Hyperledger blockchain: {"key":"${$("#key2").val()}", ${JSON.stringify(response)}}`
+
+						$("#field3").show()
+
+
+					},
+					error: function (response) {
+						console.log(response);
+					}
+				});
+
+
+
+
+			}
+
+
+
+			function invoke_hyperledger() {
+
+				$("#field0").empty()
+				$("#field1").empty()
+
+				$.ajax({
+					type: "GET",
+					url: "/invoke_hyperledger",
+					contentType: "application/json",
+					dataType: "json",
+					data: {
+						key: $("#key1").val(),
+						value: $("#value").val(),
+					},
+					success: function (response) {
+						document.getElementById('field0').innerHTML = 'Your data was recorded on the Hyperledger blockain. You can check it out by following this link.';
+						document.getElementById('field1').innerHTML = `http://localhost:5984/_utils/#database/mychannel_ttcc/${$("#key1").val()}`;
+
+
+						$("#field1").attr("href", `http://localhost:5984/_utils/#database/mychannel_ttcc/${$("#key1").val()}`);
+
+						$("#field0").show()
+						$("#field1").show()
+
+					},
+					error: function (response) {
+						console.log(response);
+					}
+				});
+			}
+
+
+
+
+			function query_ethereum() {
+				$("#field3").empty()
+
+				mycontract.methods.retreive($("#key2").val()).call().then(function (data) { if (data != '') { document.getElementById('field3').innerHTML = `This is stored on the Ethereum blockchain: {"key":"${$("#key2").val()}", {"value":"${data}"}}` } });
+				$("#field3").show()
+
+
+			}
+
+
+			async function invoke_ethereum() {
+
+				$("#field0").empty()
+				$("#field1").empty()
+
+				var array = await web3.eth.getAccounts();
+				web3.eth.defaultAccount = array[0];
+
+				mycontract.methods.store($("#key1").val(), $("#value").val()).send({ from: web3.eth.defaultAccount }).then(function (data) {
+					if (data != '') {
+						document.getElementById('field0').innerHTML = 'Your data was recorded on the Ethereum blockain. You can check it out by following this link. Click the "Click to see More" button to expand the view. Then, go to "Input Data:" and select "UTF-8" at the drop-down field "View Input As" to query the recorded data on the Ethereum blockchain:';
+						document.getElementById('field1').innerHTML = `https://ropsten.etherscan.io/tx/${data.transactionHash}`;
+						$("#field1").attr("href", `https://ropsten.etherscan.io/tx/${data.transactionHash}`);
+					}
+				}).catch(console.log);
+
+				$("#field0").show()
+				$("#field1").show()
+
+
+			}
+
+
+
+			async function copy_2() {
+
+				$("#field5").empty();
+				$("#field6").empty();
+
+				mycontract.methods.retreive($("#key3").val()).call().then(function (data) {
+					if (data != '') {
+
+						$.ajax({
+							type: "GET",
+							url: "/invoke_hyperledger",
+							contentType: "application/json",
+							dataType: "json",
+							data: {
+								key: $("#key3").val(),
+								value: `${data}`,
+							},
+							success: function (response) {
+								document.getElementById('field5').innerHTML = 'Your data was recorded on the Hyperledger blockain. You can check it out by following this link.';
+								document.getElementById('field6').innerHTML = `http://localhost:5984/_utils/#database/mychannel_ttcc/${$("#key3").val()}`;
+
+								$("#field6").attr("href", `http://localhost:5984/_utils/#database/mychannel_ttcc/${$("#key3").val()}`);
+
+								$("#field5").show();
+								$("#field5").show();
+
+							}
+						});
+
+					}
+				});
+			}
+
+
+
+			async function copy_1() {
+
+				$("#field5").empty();
+				$("#field6").empty();
+				$.ajax({
+					type: "GET",
+					url: "/query_hyperledger",
+					contentType: "application/json",
+					dataType: "json",
+					data: {
+						key: $("#key3").val(),
+					},
+					success: async function (response) {
+
+						var array = await web3.eth.getAccounts();
+						web3.eth.defaultAccount = array[0];
+
+						mycontract.methods.store($("#key3").val(), response.value.toString()).send({ from: web3.eth.defaultAccount }).then(function (data) {
+							if (data != '') {
+								document.getElementById('field5').innerHTML = 'Your data was recorded on the Ethereum blockain. You can check it out by following this link. Click the "Click to see More" button to expand the view. Then, go to "Input Data:" and select "UTF-8" at the drop-down field "View Input As" to query the recorded data on the Ethereum blockchain:';
+								document.getElementById('field6').innerHTML = `https://ropsten.etherscan.io/tx/${data.transactionHash}`;
+								$("#field6").attr("href", `https://ropsten.etherscan.io/tx/${data.transactionHash}`);
+							}
+						}).catch(console.log);
+
+						$("#field5").show();
+						$("#field6").show();
+					}
+				});
+
+			}
+
+
+
+		</script>
+	</body>
+
+</html>
