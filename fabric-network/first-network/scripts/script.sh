@@ -30,7 +30,7 @@ PACKAGE_ID=""
 
 if [ "$CC_SRC_LANGUAGE" = "go" -o "$CC_SRC_LANGUAGE" = "golang" ]; then
 	CC_RUNTIME_LANGUAGE=golang
-	CC_SRC_PATH="github.com/hyperledger/fabric-samples/chaincode/go/"
+	CC_SRC_PATH="github.com/hyperledger/fabric-network/chaincode/go/"
 elif [ "$CC_SRC_LANGUAGE" = "javascript" ]; then
 	CC_RUNTIME_LANGUAGE=node # chaincode runtime language is node.js
 	CC_SRC_PATH="/opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode/javascript/"

@@ -180,7 +180,7 @@ function networkUp() {
 
   if [ "${NO_CHAINCODE}" != "true" ]; then
     echo Vendoring Go dependencies ...
-    pushd ../chaincode/track_and_trace/go
+    pushd ../chaincode/go
     GO111MODULE=on go mod vendor
     popd
     echo Finished vendoring Go dependencies

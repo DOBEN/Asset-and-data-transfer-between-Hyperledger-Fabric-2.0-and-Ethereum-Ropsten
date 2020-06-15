@@ -65,7 +65,7 @@ async function main() {
             type: 'X.509',
         };
         await wallet.put('appUser', x509Identity);
-        console.log('Successfully registered and enrolled admin user "appUser" and imported it into the wallet');
+        console.log('Successfully registered and enrolled user "appUser" and imported it into the wallet');
 
     } catch (error) {
         console.error(`Failed to register user "appUser": ${error}`);

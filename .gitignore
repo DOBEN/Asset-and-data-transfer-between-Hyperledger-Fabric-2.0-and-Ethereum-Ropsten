@@ -1,0 +1,4 @@
+/website/wallet/*
+/website/node_modules/*
+/fabric-network/first-network/crypto-config/*
+/website/wallet/Org1MSP/*

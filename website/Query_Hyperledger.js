@@ -1,7 +1,7 @@
 
 
 
-module.exports = async function Query_Hyperledger(_key) {
+module.exports = async function Query_Hyperledger(_function_name, _key) {
 
     'use strict';
 
@@ -39,7 +39,7 @@ module.exports = async function Query_Hyperledger(_key) {
         // Get the smart contract from the network channel.
         const contract = network.getContract(smartContractID_1);
 
-        const response = await contract.evaluateTransaction('retrieve', _key);
+        const response = await contract.evaluateTransaction(_function_name, _key);
 
         await gateway.disconnect();
         return response.toString();

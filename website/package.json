@@ -13,7 +13,7 @@
     "fabric-ca-client": "^2.1.0",
     "fabric-network": "^2.1.0",
     "fs": "0.0.1-security",
-    "grpc": "^1.24.2",
+    "grpc": "^1.24.3",
     "keccak": "^2.1.0",
     "node": "^10.21.0",
     "path": "^0.12.7",

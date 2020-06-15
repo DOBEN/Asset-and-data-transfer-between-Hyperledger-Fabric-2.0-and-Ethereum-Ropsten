@@ -1,4 +1,0 @@
-/website/wallet/*
-/website/node_module/*
-/fabric-network/first-network/crypto-config/ordererOrganizations*
-/fabric-network/first-network/crypto-config/peerOrganizations*

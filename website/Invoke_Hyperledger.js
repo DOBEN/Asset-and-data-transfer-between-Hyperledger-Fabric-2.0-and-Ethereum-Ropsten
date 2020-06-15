@@ -1,7 +1,7 @@
 
 
 
-module.exports = async function Invoke_Hyperledger(_key, _value) {
+module.exports = async function Invoke_Hyperledger(_function_name, _key, _value) {
 
     'use strict';
 
@@ -41,7 +41,7 @@ module.exports = async function Invoke_Hyperledger(_key, _value) {
         // Get the smart contract from the network channel.
         const contract1 = network1.getContract(smartContractID_1);
 
-        await contract1.submitTransaction('store', _key, `{"value":"${_value}"}`);
+        await contract1.submitTransaction(_function_name, _key, `{"value":"${_value}"}`);
 
         await gateway.disconnect();
 
